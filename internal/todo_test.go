@@ -51,7 +51,7 @@ func TestPriorityValidator(t *testing.T) {
 
 			actualErr := test.input.Validate()
 			isErr := actualErr != nil
-			require.Equal(t, isErr, test.withErr)
+			require.Equal(t, test.withErr, isErr)
 		})
 	}
 }
@@ -104,7 +104,7 @@ func TestDateValidator(t *testing.T) {
 
 			actualErr := test.input.Validate()
 			isErr := actualErr != nil
-			require.Equal(t, isErr, test.withErr)
+			require.Equal(t, test.withErr, isErr)
 		})
 	}
 }
@@ -174,7 +174,7 @@ func TestTaskValidator(t *testing.T) {
 
 			actualErr := test.input.Validate()
 			isErr := actualErr != nil
-			require.Equal(t, isErr, test.withErr)
+			require.Equal(t, test.withErr, isErr)
 		})
 	}
 }

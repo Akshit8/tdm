@@ -27,7 +27,7 @@ func TestCreate(t *testing.T) {
 
 		task, err := repo.Create(context.Background(), "invalid priority", internal.Priority(-1), internal.Dates{})
 		require.Error(t, err)
-		require.Equal(t, task, internal.Task{})
+		require.Equal(t, internal.Task{}, task)
 	})
 }
 
