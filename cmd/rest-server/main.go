@@ -31,13 +31,13 @@ func main() {
 		log.Fatalln("Couldn't load configuration", err)
 	}
 
-	config := env.NewConfiguration(NewVaultProvider())
+	config := env.NewConfiguration(newVaultProvider())
 
 	db := newDB(config)
 	defer db.Close()
 
 	repo := postgresql.NewTask(db)
-	svc := service.Newtask(repo)
+	svc := service.NewTask(repo)
 
 	r := mux.NewRouter()
 
@@ -99,7 +99,7 @@ func newDB(config *env.Configuration) *sql.DB {
 	return db
 }
 
-func NewVaultProvider() env.Provider {
+func newVaultProvider() env.Provider {
 	vaultPath := os.Getenv("VAULT_PATH")
 	vaultToken := os.Getenv("VAULT_TOKEN")
 	vaultAddress := os.Getenv("VAULT_ADDRESS")

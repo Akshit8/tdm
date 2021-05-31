@@ -20,6 +20,7 @@ type Configuration struct {
 	provider Provider
 }
 
+// NewConfiguration creates new intance of Configuration
 func NewConfiguration(provider Provider) *Configuration {
 	return &Configuration{
 		provider: provider,

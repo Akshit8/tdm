@@ -17,6 +17,7 @@ type vaultProvider struct {
 	results map[string]map[string]string
 }
 
+// NewVaultProvider creates new instance of vault provider
 func NewVaultProvider(token, addr, path string) (env.Provider, error) {
 	config := &api.Config{
 		Address: addr,

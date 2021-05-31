@@ -29,7 +29,7 @@ type task struct {
 }
 
 // NewTask creates new instance of Task.
-func Newtask(repo TaskRepository) TaskService {
+func NewTask(repo TaskRepository) TaskService {
 	return &task{
 		repo: repo,
 	}

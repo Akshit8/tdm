@@ -17,6 +17,7 @@ type TaskHandler struct {
 	svc service.TaskService
 }
 
+// NewTaskHandler creates new instance of TaskHandler
 func NewTaskHandler(svc service.TaskService) *TaskHandler {
 	return &TaskHandler{
 		svc: svc,
