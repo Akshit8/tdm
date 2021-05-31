@@ -50,7 +50,7 @@ func (t *TaskHandler) create(w http.ResponseWriter, r *http.Request) {
 	var req CreateTasksRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		renderResponse(w, "invalid request", http.StatusBadRequest)
+		renderErrorResponse(w, "invalid request", http.StatusBadRequest)
 		return
 	}
 
@@ -81,7 +81,7 @@ func (t *TaskHandler) task(w http.ResponseWriter, r *http.Request) {
 
 	task, err := t.svc.Task(r.Context(), id)
 	if err != nil {
-		renderErrorResponse(w, "error failed", http.StatusInternalServerError)
+		renderErrorResponse(w, "find failed", http.StatusInternalServerError)
 		return
 	}
 

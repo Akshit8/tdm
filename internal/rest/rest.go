@@ -7,13 +7,14 @@ import (
 	"net/http"
 )
 
-type errorResponse struct {
+// ErrorResponse represents a response containing an error message.
+type ErrorResponse struct {
 	Status int    `json:"status"`
 	Error  string `json:"error"`
 }
 
 func renderErrorResponse(w http.ResponseWriter, msg string, status int) {
-	renderResponse(w, errorResponse{Status: status, Error: msg}, status)
+	renderResponse(w, ErrorResponse{Status: status, Error: msg}, status)
 }
 
 func renderResponse(w http.ResponseWriter, res interface{}, status int) {
