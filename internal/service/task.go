@@ -8,12 +8,26 @@ import (
 	"github.com/Akshit8/tdm/internal"
 )
 
+// TaskRepository defines the datastore handling persisting Task records.
+type TaskRepository interface {
+	Create(ctx context.Context, description string, priority internal.Priority, dates internal.Dates) (internal.Task, error)
+	Find(ctx context.Context, id string) (internal.Task, error)
+	Update(ctx context.Context, id string, description string, priority internal.Priority, dates internal.Dates, isDone bool) error
+}
+
+// TaskService defines available operation on Task Service
+type TaskService interface {
+	Create(ctx context.Context, description string, priority internal.Priority, dates internal.Dates) (internal.Task, error)
+	Task(ctx context.Context, id string) (internal.Task, error)
+	Update(ctx context.Context, id string, description string, priority internal.Priority, dates internal.Dates, isDone bool) error
+}
+
 type task struct {
-	repo internal.TaskRepository
+	repo TaskRepository
 }
 
 // NewTask creates new instance of Task.
-func Newtask(repo internal.TaskRepository) internal.TaskService {
+func Newtask(repo TaskRepository) TaskService {
 	return &task{
 		repo: repo,
 	}

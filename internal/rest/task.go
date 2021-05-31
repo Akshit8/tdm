@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/Akshit8/tdm/internal"
+	"github.com/Akshit8/tdm/internal/service"
 	"github.com/gorilla/mux"
 )
 
@@ -13,10 +14,10 @@ const uuidRegEx string = `[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-
 
 // TaskHandler ...
 type TaskHandler struct {
-	svc internal.TaskService
+	svc service.TaskService
 }
 
-func NewTaskHandler(svc internal.TaskService) *TaskHandler {
+func NewTaskHandler(svc service.TaskService) *TaskHandler {
 	return &TaskHandler{
 		svc: svc,
 	}

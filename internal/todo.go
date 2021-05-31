@@ -2,7 +2,6 @@
 package internal
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"time"
@@ -79,18 +78,4 @@ func (t Task) Validate() error {
 	}
 
 	return nil
-}
-
-// TaskRepository defines the datastore handling persisting Task records.
-type TaskRepository interface {
-	Create(ctx context.Context, description string, priority Priority, dates Dates) (Task, error)
-	Find(ctx context.Context, id string) (Task, error)
-	Update(ctx context.Context, id string, description string, priority Priority, dates Dates, isDone bool) error
-}
-
-// TaskService defines available operation on Task Service
-type TaskService interface {
-	Create(ctx context.Context, description string, priority Priority, dates Dates) (Task, error)
-	Task(ctx context.Context, id string) (Task, error)
-	Update(ctx context.Context, id string, description string, priority Priority, dates Dates, isDone bool) error
 }

@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/Akshit8/tdm/internal"
+	"github.com/Akshit8/tdm/internal/service"
 	"github.com/google/uuid"
 )
 
@@ -15,7 +16,7 @@ type Task struct {
 }
 
 // NewTask instantiates the Task repository.
-func NewTask(db *sql.DB) internal.TaskRepository {
+func NewTask(db *sql.DB) service.TaskRepository {
 	return &Task{
 		q: New(db),
 	}
