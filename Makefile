@@ -25,8 +25,6 @@ graphql:
 	@echo "generating graphql stubs"
 	go run github.com/99designs/gqlgen generate
 
-sqlc:
-
 createdb:
 	docker exec -it tdm_postgres_1 createdb --username=root --owner=root tdm
 

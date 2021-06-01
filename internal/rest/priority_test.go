@@ -65,8 +65,8 @@ func TestConvert(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name string
-		input rest.Priority
+		name   string
+		input  rest.Priority
 		output internal.Priority
 	}{
 		{
@@ -116,13 +116,13 @@ func TestPriorityMarshalJSON(t *testing.T) {
 	t.Parallel()
 
 	type output struct {
-		res []byte
+		res     []byte
 		withErr bool
 	}
 
 	tests := []struct {
-		name string
-		input rest.Priority
+		name   string
+		input  rest.Priority
 		output output
 	}{
 		{
@@ -164,13 +164,13 @@ func TestPriorityUnmarshalJSON(t *testing.T) {
 	t.Parallel()
 
 	type output struct {
-		res rest.Priority
+		res     rest.Priority
 		withErr bool
 	}
 
 	tests := []struct {
-		name string
-		input []byte
+		name   string
+		input  []byte
 		output output
 	}{
 		{
