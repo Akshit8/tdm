@@ -26,10 +26,10 @@ graphql:
 	go run github.com/99designs/gqlgen generate
 
 createdb:
-	docker exec -it tdm_postgres_1 createdb --username=root --owner=root tdm
+	docker exec tdm_postgres_1 createdb --username=root --owner=root tdm
 
 dropdb:
-	docker exec -it tdm_postgres_1 dropdb tdm
+	docker exec tdm_postgres_1 dropdb tdm
 
 migrationup:
 	migrate -path ./db/migrations -database "postgres://root:secret@localhost:5432/tdm?sslmode=disable" -verbose up
