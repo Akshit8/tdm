@@ -19,7 +19,6 @@ jobs:
       - name: Set up dev environment
         run: |
           make dev
-          make createdb
 
       - name: Install golang-migrate
         run: |

@@ -6,6 +6,7 @@ import (
 
 	"github.com/Akshit8/tdm/internal"
 	"github.com/Akshit8/tdm/internal/rest"
+
 	"github.com/google/go-cmp/cmp"
 	"github.com/stretchr/testify/require"
 )
@@ -61,7 +62,7 @@ func TestNewPriority(t *testing.T) {
 	}
 }
 
-func TestConvert(t *testing.T) {
+func TestConvertPriority(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {

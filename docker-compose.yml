@@ -7,6 +7,8 @@ services:
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: secret
+      # added specifically for github action
+      POSTGRES_DB: tdm
     ports:
       - 5432:5432
     volumes:

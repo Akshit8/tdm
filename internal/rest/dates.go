@@ -25,6 +25,14 @@ func NewDates(d internal.Dates) Dates {
 	}
 }
 
+// Convert returns the domain type defining the internal representation.
+func (d Dates) Convert() internal.Dates {
+	return internal.Dates{
+		Start: time.Time(d.Start),
+		Due:   time.Time(d.Due),
+	}
+}
+
 // MarshalJSON ...
 func (t Time) MarshalJSON() ([]byte, error) {
 	str := time.Time(t).Format(time.RFC3339)
