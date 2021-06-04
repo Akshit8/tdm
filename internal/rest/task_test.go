@@ -250,6 +250,12 @@ func TestUpdate(t *testing.T) {
 			func() []byte {
 				b, _ := json.Marshal(&rest.UpdateTasksRequest{
 					Description: "update task",
+					Priority:    rest.Priority("low"),
+					Dates: rest.Dates{
+						Start: rest.Time(time.Date(2009, 11, 19, 23, 0, 0, 0, time.UTC)),
+						Due:   rest.Time(time.Date(2009, 11, 19, 23, 0, 0, 0, time.UTC).Add(time.Hour)),
+					},
+					IsDone: true,
 				})
 
 				return b
