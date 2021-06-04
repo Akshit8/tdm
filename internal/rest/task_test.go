@@ -159,7 +159,7 @@ func TestTask(t *testing.T) {
 					internal.Task{
 						ID:          "a-b-c",
 						Description: "existing task",
-						Priority: internal.PriorityLow,
+						Priority:    internal.PriorityLow,
 						Dates: internal.Dates{
 							Start: time.Date(2009, 11, 19, 23, 0, 0, 0, time.UTC),
 							Due:   time.Date(2009, 11, 19, 23, 0, 0, 0, time.UTC).Add(time.Hour),
@@ -174,7 +174,7 @@ func TestTask(t *testing.T) {
 					Task: rest.Task{
 						ID:          "a-b-c",
 						Description: "existing task",
-						Priority: rest.Priority("low"),
+						Priority:    rest.Priority("low"),
 						Dates: rest.Dates{
 							Start: rest.Time(time.Date(2009, 11, 19, 23, 0, 0, 0, time.UTC)),
 							Due:   rest.Time(time.Date(2009, 11, 19, 23, 0, 0, 0, time.UTC).Add(time.Hour)),
