@@ -8,6 +8,29 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: secret
+          POSTGRES_DB: simple_bank
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      vault:
+        image: vault:1.7.1
+        env:
+          VAULT_DEV_ROOT_TOKEN_ID: myroot
+          VAULT_DEV_LISTEN_ADDRESS: 0.0.0.0:8300
+        ports:
+          - 8300:8300
+
     steps:
       - uses: actions/checkout@v2
 
@@ -15,10 +38,6 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: 1.15
-
-      - name: Set up dev environment
-        run: |
-          make dev
 
       - name: Install golang-migrate
         run: |
