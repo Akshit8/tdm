@@ -5,48 +5,83 @@ import (
 	"testing"
 	"time"
 
+	"github.com/Akshit8/tdm/internal"
 	"github.com/Akshit8/tdm/internal/rest"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/stretchr/testify/require"
 )
 
-// func TestNewDates(t *testing.T) {
-// 	t.Parallel()
+func TestNewDates(t *testing.T) {
+	t.Parallel()
 
-// 	tests := []struct {
-// 		name   string
-// 		input  internal.Dates
-// 		output rest.Dates
-// 	}{
-// 		{
-// 			"OK",
-// 			internal.Dates{
-// 				Start: time.Date(2009, 11, 10, 23, 0, 0, 0, time.UTC),
-// 				Due:   time.Date(2009, 11, 10, 23, 0, 0, 0, time.UTC).Add(time.Hour),
-// 			},
-// 			rest.Dates{
-// 				Start: rest.Time(time.Date(2009, 11, 10, 23, 0, 0, 0, time.UTC)),
-// 				Due:   rest.Time(time.Date(2009, 11, 10, 23, 0, 0, 0, time.UTC).Add(time.Hour)),
-// 			},
-// 		},
-// 	}
+	tests := []struct {
+		name   string
+		input  internal.Dates
+		output rest.Dates
+	}{
+		{
+			"OK",
+			internal.Dates{
+				Start: time.Date(2009, 11, 10, 23, 0, 0, 0, time.UTC),
+				Due:   time.Date(2009, 11, 10, 23, 0, 0, 0, time.UTC).Add(time.Hour),
+			},
+			rest.Dates{
+				Start: rest.Time(time.Date(2009, 11, 10, 23, 0, 0, 0, time.UTC)),
+				Due:   rest.Time(time.Date(2009, 11, 10, 23, 0, 0, 0, time.UTC).Add(time.Hour)),
+			},
+		},
+	}
 
-// 	for _, test := range tests {
-// 		test := test
+	for _, test := range tests {
+		test := test
 
-// 		t.Run(test.name, func(t *testing.T) {
-// 			t.Parallel()
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
 
-// 			res := rest.NewDates(test.input)
+			res := rest.NewDates(test.input)
 
-// 			if !cmp.Equal(test.output, res, cmpopts.IgnoreUnexported(rest.Time{})) {
-// 				t.Fatalf("expected output do not match\n%s", cmp.Diff(test.output, res, cmpopts.IgnoreUnexported(rest.Time{})))
-// 			}
-// 		})
-// 	}
-// }
+			if !cmp.Equal(test.output, res, cmp.AllowUnexported(rest.Time{})) {
+				t.Fatalf("expected output do not match\n%s", cmp.Diff(test.output, res, cmp.AllowUnexported(rest.Time{})))
+			}
+		})
+	}
+}
+
+func TestDatesConvert(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name   string
+		input  rest.Dates
+		output internal.Dates
+	}{
+		{
+			"OK",
+			rest.Dates{
+				Start: rest.Time(time.Date(2009, 11, 19, 23, 0, 0, 0, time.UTC)),
+				Due:   rest.Time(time.Date(2009, 11, 19, 23, 0, 0, 0, time.UTC).Add(time.Hour)),
+			},
+			internal.Dates{
+				Start: time.Date(2009, 11, 19, 23, 0, 0, 0, time.UTC),
+				Due:   time.Date(2009, 11, 19, 23, 0, 0, 0, time.UTC).Add(time.Hour),
+			},
+		},
+	}
+
+	for _, test := range tests {
+		test := test
+
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+
+			res := test.input.Convert()
+			if !cmp.Equal(test.output, res, cmp.AllowUnexported(rest.Time{})) {
+				t.Fatalf("expected output do not match\n%s", cmp.Diff(test.output, res, cmp.AllowUnexported(rest.Time{})))
+			}
+		})
+	}
+}
 
 func TestTimeMarshal(t *testing.T) {
 	t.Parallel()
@@ -130,8 +165,8 @@ func TestTimeUnmarshal(t *testing.T) {
 			isErr := err != nil
 			require.Equal(t, test.output.withErr, isErr)
 
-			if !cmp.Equal(test.output.res, res, cmpopts.IgnoreUnexported(rest.Time{})) {
-				t.Fatalf("expected output do not match\n%s", cmp.Diff(test.output.res, res, cmpopts.IgnoreUnexported(rest.Time{})))
+			if !cmp.Equal(test.output.res, res, cmp.AllowUnexported(rest.Time{})) {
+				t.Fatalf("expected output do not match\n%s", cmp.Diff(test.output.res, res, cmp.AllowUnexported(rest.Time{})))
 			}
 		})
 	}

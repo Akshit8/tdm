@@ -8,10 +8,12 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/Akshit8/tdm/internal"
 	"github.com/Akshit8/tdm/internal/rest"
 	"github.com/Akshit8/tdm/internal/service/servicetesting"
+
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
@@ -40,12 +42,23 @@ func TestCreate(t *testing.T) {
 					internal.Task{
 						ID:          "1-2-3",
 						Description: "new task",
+						Priority:    internal.PriorityHigh,
+						Dates: internal.Dates{
+							Start: time.Date(2009, 11, 19, 23, 0, 0, 0, time.UTC),
+							Due:   time.Date(2009, 11, 19, 23, 0, 0, 0, time.UTC).Add(time.Hour),
+						},
+						IsDone: false,
 					},
 					nil)
 			},
 			func() []byte {
 				b, _ := json.Marshal(&rest.CreateTasksRequest{
 					Description: "new task",
+					Priority:    rest.Priority("high"),
+					Dates: rest.Dates{
+						Start: rest.Time(time.Date(2009, 11, 19, 23, 0, 0, 0, time.UTC)),
+						Due:   rest.Time(time.Date(2009, 11, 19, 23, 0, 0, 0, time.UTC).Add(time.Hour)),
+					},
 				})
 
 				return b
@@ -56,6 +69,12 @@ func TestCreate(t *testing.T) {
 					Task: rest.Task{
 						ID:          "1-2-3",
 						Description: "new task",
+						Priority:    rest.Priority("high"),
+						Dates: rest.Dates{
+							Start: rest.Time(time.Date(2009, 11, 19, 23, 0, 0, 0, time.UTC)),
+							Due:   rest.Time(time.Date(2009, 11, 19, 23, 0, 0, 0, time.UTC).Add(time.Hour)),
+						},
+						IsDone: false,
 					},
 				},
 				&rest.CreateTasksResponse{},
@@ -140,6 +159,12 @@ func TestTask(t *testing.T) {
 					internal.Task{
 						ID:          "a-b-c",
 						Description: "existing task",
+						Priority: internal.PriorityLow,
+						Dates: internal.Dates{
+							Start: time.Date(2009, 11, 19, 23, 0, 0, 0, time.UTC),
+							Due:   time.Date(2009, 11, 19, 23, 0, 0, 0, time.UTC).Add(time.Hour),
+						},
+						IsDone: true,
 					},
 					nil)
 			},
@@ -149,6 +174,12 @@ func TestTask(t *testing.T) {
 					Task: rest.Task{
 						ID:          "a-b-c",
 						Description: "existing task",
+						Priority: rest.Priority("low"),
+						Dates: rest.Dates{
+							Start: rest.Time(time.Date(2009, 11, 19, 23, 0, 0, 0, time.UTC)),
+							Due:   rest.Time(time.Date(2009, 11, 19, 23, 0, 0, 0, time.UTC).Add(time.Hour)),
+						},
+						IsDone: true,
 					},
 				},
 				&rest.GetTasksResponse{},
@@ -311,8 +342,8 @@ func assertResponse(t *testing.T, res *http.Response, test testOuptut) {
 	require.NoError(t, err)
 	defer res.Body.Close()
 
-	if !cmp.Equal(test.expected, test.target) {
-		t.Fatalf("expected results don't match: %s", cmp.Diff(test.expected, test.target))
+	if !cmp.Equal(test.expected, test.target, cmp.AllowUnexported(rest.Time{})) {
+		t.Fatalf("expected results don't match: %s", cmp.Diff(test.expected, test.target, cmp.AllowUnexported(rest.Time{})))
 	}
 
 }

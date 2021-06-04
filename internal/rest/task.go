@@ -36,6 +36,7 @@ type Task struct {
 	Description string   `json:"description"`
 	Priority    Priority `json:"priority"`
 	Dates       Dates    `json:"dates"`
+	IsDone      bool     `json:"is_done"`
 }
 
 // CreateTasksRequest defines the request used for creating tasks.
@@ -73,6 +74,7 @@ func (t *TaskHandler) create(w http.ResponseWriter, r *http.Request) {
 				Description: task.Description,
 				Priority:    NewPriority(task.Priority),
 				Dates:       NewDates(task.Dates),
+				IsDone:      task.IsDone,
 			},
 		}, http.StatusCreated)
 }
@@ -98,6 +100,7 @@ func (t *TaskHandler) task(w http.ResponseWriter, r *http.Request) {
 				Description: task.Description,
 				Priority:    NewPriority(task.Priority),
 				Dates:       NewDates(task.Dates),
+				IsDone:      task.IsDone,
 			},
 		}, http.StatusOK)
 }
