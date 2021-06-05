@@ -8,7 +8,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o envtesting/provider.gen.go . Provider
+//go:generate counterfeiter -o envtesting/provider.gen.go . Provider
 
 // Provider defines methods for external secret provider like Hashicorp vault.
 type Provider interface {

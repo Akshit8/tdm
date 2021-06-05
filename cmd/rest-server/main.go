@@ -2,8 +2,10 @@ package main
 
 import (
 	"database/sql"
+	"embed"
 	"flag"
 	"fmt"
+	"io/fs"
 	"log"
 	"net/http"
 	"net/url"
@@ -18,6 +20,9 @@ import (
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 )
+
+//go:embed static
+var content embed.FS
 
 func main() {
 	var envFilePath, address string
@@ -41,7 +46,11 @@ func main() {
 
 	r := mux.NewRouter()
 
+	rest.RegisterOpenAPI(r)
 	rest.NewTaskHandler(svc).Register(r)
+
+	fsys, _ := fs.Sub(content, "static")
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.FS(fsys))))
 
 	srv := &http.Server{
 		Handler:           r,

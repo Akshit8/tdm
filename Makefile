@@ -45,3 +45,9 @@ live:
 
 dev:
 	docker-compose up -d
+
+openapi-gen:
+	go run cmd/openapi-gen/main.go --path ./internal/rest
+
+test-client:
+	go run cmd/test-client/main.go

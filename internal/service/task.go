@@ -8,7 +8,7 @@ import (
 	"github.com/Akshit8/tdm/internal"
 )
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -o servicetesting/task_service.gen.go . TaskService
+//go:generate counterfeiter -o servicetesting/task_service.gen.go . TaskService
 
 // TaskRepository defines the datastore handling persisting Task records.
 type TaskRepository interface {
