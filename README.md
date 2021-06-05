@@ -15,7 +15,7 @@ The application uses some features in supported in `Go 1.16+`
 # runs and manages sql migration both from CLI and programatically.
 go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@v4.14.1
 
-# converts sql queries into type golang code.
+# converts sql queries into type-safe golang code.
 go install github.com/kyleconroy/sqlc/cmd/sqlc@v1.6.0
 
 # creates mock of any interface, basic usgage for unit testing.
