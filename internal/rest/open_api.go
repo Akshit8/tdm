@@ -186,6 +186,7 @@ func NewOpenAPI3() openapi3.T {
 	return swagger
 }
 
+// RegisterOpenAPI registers open API config files to mux router.
 func RegisterOpenAPI(r *mux.Router) {
 	swagger := NewOpenAPI3()
 
@@ -201,6 +202,6 @@ func RegisterOpenAPI(r *mux.Router) {
 		_, _ = w.Write(data)
 
 		w.WriteHeader(http.StatusOK)
-		
+
 	}).Methods(http.MethodGet)
 }
