@@ -11,8 +11,7 @@ import (
 )
 
 // Task represents the repository used for interacting with Task records.
-type Task struct {
-	q *Queries
+type Task struct {q *Queries
 }
 
 // NewTask instantiates the Task repository.
@@ -31,7 +30,7 @@ func (t *Task) Create(ctx context.Context, description string, priority internal
 		DueDate:     newNullTime(dates.Due),
 	})
 	if err != nil {
-		return internal.Task{}, internal.WrapError(err, internal.ErrorCodeUnknown, "insert task")
+		return internal.Task{}, internal.WrapErrorf(err, internal.ErrorCodeUnknown, "insert task")
 	}
 
 	return internal.Task{
@@ -46,20 +45,20 @@ func (t *Task) Create(ctx context.Context, description string, priority internal
 func (t *Task) Find(ctx context.Context, id string) (internal.Task, error) {
 	val, err := uuid.Parse(id)
 	if err != nil {
-		return internal.Task{}, internal.WrapError(err, internal.ErrorCodeInvalidArgument, "invalid uuid")
+		return internal.Task{}, internal.WrapErrorf(err, internal.ErrorCodeInvalidArgument, "invalid uuid")
 	}
 
 	res, err := t.q.SelectTask(ctx, val)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return internal.Task{}, internal.WrapError(err, internal.ErrorCodeNotFound, "task not found")
+			return internal.Task{}, internal.WrapErrorf(err, internal.ErrorCodeNotFound, "task not found")
 		}
-		return internal.Task{}, internal.WrapError(err, internal.ErrorCodeUnknown, "select task")
+		return internal.Task{}, internal.WrapErrorf(err, internal.ErrorCodeUnknown, "select task")
 	}
 
 	priority, err := convertPriority(res.Priority)
 	if err != nil {
-		return internal.Task{}, internal.WrapError(err, internal.ErrorCodeUnknown, "convert priority")
+		return internal.Task{}, internal.WrapErrorf(err, internal.ErrorCodeUnknown, "convert priority")
 	}
 
 	return internal.Task{
@@ -78,7 +77,7 @@ func (t *Task) Find(ctx context.Context, id string) (internal.Task, error) {
 func (t *Task) Update(ctx context.Context, id string, description string, priority internal.Priority, dates internal.Dates, isDone bool) error {
 	val, err := uuid.Parse(id)
 	if err != nil {
-		return internal.WrapError(err, internal.ErrorCodeInvalidArgument, "invalid uuid")
+		return internal.WrapErrorf(err, internal.ErrorCodeInvalidArgument, "invalid uuid")
 	}
 
 	_, err = t.q.UpdateTask(ctx, UpdateTaskParams{
@@ -91,10 +90,10 @@ func (t *Task) Update(ctx context.Context, id string, description string, priori
 	})
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return internal.WrapError(err, internal.ErrorCodeNotFound, "task not found")
+			return internal.WrapErrorf(err, internal.ErrorCodeNotFound, "task not found")
 		}
 
-		return internal.WrapError(err, internal.ErrorCodeUnknown, "update task")
+		return internal.WrapErrorf(err, internal.ErrorCodeUnknown, "update task")
 	}
 
 	return nil
@@ -104,16 +103,16 @@ func (t *Task) Update(ctx context.Context, id string, description string, priori
 func (t *Task) Delete(ctx context.Context, id string) error {
 	val, err := uuid.Parse(id)
 	if err != nil {
-		return internal.WrapError(err, internal.ErrorCodeInvalidArgument, "invalid uuid")
+		return internal.WrapErrorf(err, internal.ErrorCodeInvalidArgument, "invalid uuid")
 	}
 
 	_, err = t.q.DeleteTask(ctx, val)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return internal.WrapError(err, internal.ErrorCodeNotFound, "task not found")
+			return internal.WrapErrorf(err, internal.ErrorCodeNotFound, "task not found")
 		}
 
-		return internal.WrapError(err, internal.ErrorCodeUnknown, "delete task")
+		return internal.WrapErrorf(err, internal.ErrorCodeUnknown, "delete task")
 	}
 
 	return nil

@@ -68,11 +68,11 @@ func (t Task) Validate() error {
 	}
 
 	if err := t.Priority.Validate(); err != nil {
-		return WrapError(err, ErrorCodeInvalidArgument, "priority is invalid")
+		return WrapErrorf(err, ErrorCodeInvalidArgument, "priority is invalid")
 	}
 
 	if err := t.Dates.Validate(); err != nil {
-		return WrapError(err, ErrorCodeInvalidArgument, "dates are invalid")
+		return WrapErrorf(err, ErrorCodeInvalidArgument, "dates are invalid")
 	}
 
 	return nil

@@ -26,7 +26,7 @@ const (
 )
 
 // WrapErrorf returns a wrapped error.
-func WrapError(original error, code ErrorCode, format string, a ...interface{}) error {
+func WrapErrorf(original error, code ErrorCode, format string, a ...interface{}) error {
 	return &Error{
 		original: original,
 		code:     code,
@@ -36,7 +36,7 @@ func WrapError(original error, code ErrorCode, format string, a ...interface{}) 
 
 // NewErrorf creates a new error
 func NewErrorf(code ErrorCode, format string, a ...interface{}) error {
-	return WrapError(nil, code, format, a...)
+	return WrapErrorf(nil, code, format, a...)
 }
 
 // Error returns the message, when wrapping errors the wrapped error is returned.

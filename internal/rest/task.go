@@ -57,7 +57,7 @@ func (t *TaskHandler) create(w http.ResponseWriter, r *http.Request) {
 	var req CreateTasksRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		renderErrorResponse(w, "invalid request", internal.WrapError(err, internal.ErrorCodeInvalidArgument, "json decoder"))
+		renderErrorResponse(w, "invalid request", internal.WrapErrorf(err, internal.ErrorCodeInvalidArgument, "json decoder"))
 		return
 	}
 
@@ -119,7 +119,7 @@ func (t *TaskHandler) update(w http.ResponseWriter, r *http.Request) {
 	var req UpdateTasksRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		renderErrorResponse(w, "invalid request", internal.WrapError(err, internal.ErrorCodeInvalidArgument, "json decoder"))
+		renderErrorResponse(w, "invalid request", internal.WrapErrorf(err, internal.ErrorCodeInvalidArgument, "json decoder"))
 		return
 	}
 
