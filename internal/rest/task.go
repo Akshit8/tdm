@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/Akshit8/tdm/internal"
 	"github.com/Akshit8/tdm/internal/service"
 	"github.com/gorilla/mux"
 )
@@ -28,6 +29,7 @@ func (t *TaskHandler) Register(r *mux.Router) {
 	r.HandleFunc("/tasks", t.create).Methods(http.MethodPost)
 	r.HandleFunc(fmt.Sprintf("/tasks/{id:%s}", uuidRegEx), t.task).Methods(http.MethodGet)
 	r.HandleFunc(fmt.Sprintf("/tasks/{id:%s}", uuidRegEx), t.update).Methods(http.MethodPut)
+	r.HandleFunc(fmt.Sprintf("/tasks/{id:%s}", uuidRegEx), t.delete).Methods(http.MethodDelete)
 }
 
 // Task is an activity that needs to be completed within a period of time.
@@ -55,7 +57,7 @@ func (t *TaskHandler) create(w http.ResponseWriter, r *http.Request) {
 	var req CreateTasksRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		renderErrorResponse(w, "invalid request", http.StatusBadRequest)
+		renderErrorResponse(w, "invalid request", internal.WrapError(err, internal.ErrorCodeInvalidArgument, "json decoder"))
 		return
 	}
 
@@ -63,7 +65,7 @@ func (t *TaskHandler) create(w http.ResponseWriter, r *http.Request) {
 
 	task, err := t.svc.Create(r.Context(), req.Description, req.Priority.Convert(), req.Dates.Convert())
 	if err != nil {
-		renderErrorResponse(w, "create failed", http.StatusInternalServerError)
+		renderErrorResponse(w, "create failed", err)
 		return
 	}
 
@@ -89,7 +91,7 @@ func (t *TaskHandler) task(w http.ResponseWriter, r *http.Request) {
 
 	task, err := t.svc.Task(r.Context(), id)
 	if err != nil {
-		renderErrorResponse(w, "find failed", http.StatusInternalServerError)
+		renderErrorResponse(w, "find failed", err)
 		return
 	}
 
@@ -117,7 +119,7 @@ func (t *TaskHandler) update(w http.ResponseWriter, r *http.Request) {
 	var req UpdateTasksRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		renderErrorResponse(w, "invalid request", http.StatusBadRequest)
+		renderErrorResponse(w, "invalid request", internal.WrapError(err, internal.ErrorCodeInvalidArgument, "json decoder"))
 		return
 	}
 
@@ -127,9 +129,21 @@ func (t *TaskHandler) update(w http.ResponseWriter, r *http.Request) {
 
 	err = t.svc.Update(r.Context(), id, req.Description, req.Priority.Convert(), req.Dates.Convert(), req.IsDone)
 	if err != nil {
-		renderErrorResponse(w, "update failed", http.StatusInternalServerError)
+		renderErrorResponse(w, "update failed", err)
 		return
 	}
 
 	renderResponse(w, "task updated", http.StatusOK)
+}
+
+func (t *TaskHandler) delete(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+
+	err := t.svc.Delete(r.Context(), id)
+	if err != nil {
+		renderErrorResponse(w, "delete failed", err)
+		return
+	}
+
+	renderResponse(w, "task deleted", http.StatusOK)
 }

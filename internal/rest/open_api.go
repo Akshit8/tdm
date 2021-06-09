@@ -85,7 +85,7 @@ func NewOpenAPI3() openapi3.T {
 	swagger.Components.Responses = openapi3.Responses{
 		"ErrorResponse": &openapi3.ResponseRef{
 			Value: openapi3.NewResponse().
-				WithDescription("Response when errors happen.").
+				WithDescription("Response when errors happens").
 				WithContent(openapi3.NewContentWithJSONSchema(
 					openapi3.NewSchema().
 						WithProperty("status", openapi3.NewIntegerSchema()).
@@ -147,7 +147,7 @@ func NewOpenAPI3() openapi3.T {
 						Ref: "#/components/responses/ReadTasksResponse",
 					},
 					"404": &openapi3.ResponseRef{
-						Value: openapi3.NewResponse().WithDescription("Task not found"),
+						Ref: "#/components/responses/ErrorResponse",
 					},
 					"500": &openapi3.ResponseRef{
 						Ref: "#/components/responses/ErrorResponse",
@@ -173,7 +173,27 @@ func NewOpenAPI3() openapi3.T {
 						Ref: "#/components/responses/ErrorResponse",
 					},
 					"404": &openapi3.ResponseRef{
-						Value: openapi3.NewResponse().WithDescription("Task not found"),
+						Ref: "#/components/responses/ErrorResponse",
+					},
+					"500": &openapi3.ResponseRef{
+						Ref: "#/components/responses/ErrorResponse",
+					},
+				},
+			},
+			Delete: &openapi3.Operation{
+				OperationID: "DeleteTask",
+				Parameters: []*openapi3.ParameterRef{
+					{
+						Value: openapi3.NewPathParameter("taskId").
+							WithSchema(openapi3.NewUUIDSchema()),
+					},
+				},
+				Responses: openapi3.Responses{
+					"200": &openapi3.ResponseRef{
+						Value: openapi3.NewResponse().WithDescription("Response when errors happens"),
+					},
+					"404": &openapi3.ResponseRef{
+						Ref: "#/components/responses/ErrorResponse",
 					},
 					"500": &openapi3.ResponseRef{
 						Ref: "#/components/responses/ErrorResponse",

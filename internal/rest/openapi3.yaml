@@ -48,7 +48,7 @@ components:
                 type: string
               status:
                 type: integer
-      description: Response when errors happen.
+      description: Response when errors happens
     ReadTasksResponse:
       content:
         application/json:
@@ -115,6 +115,22 @@ paths:
         "500":
           $ref: '#/components/responses/ErrorResponse'
   /tasks/{taskId}:
+    delete:
+      operationId: DeleteTask
+      parameters:
+      - in: path
+        name: taskId
+        required: true
+        schema:
+          format: uuid
+          type: string
+      responses:
+        "200":
+          description: Response when errors happens
+        "404":
+          $ref: '#/components/responses/ErrorResponse'
+        "500":
+          $ref: '#/components/responses/ErrorResponse'
     get:
       operationId: ReadTask
       parameters:
@@ -128,7 +144,7 @@ paths:
         "200":
           $ref: '#/components/responses/ReadTasksResponse'
         "404":
-          description: Task not found
+          $ref: '#/components/responses/ErrorResponse'
         "500":
           $ref: '#/components/responses/ErrorResponse'
     put:
@@ -148,7 +164,7 @@ paths:
         "400":
           $ref: '#/components/responses/ErrorResponse'
         "404":
-          description: Task not found
+          $ref: '#/components/responses/ErrorResponse'
         "500":
           $ref: '#/components/responses/ErrorResponse'
 servers:

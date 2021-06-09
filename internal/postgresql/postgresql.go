@@ -3,7 +3,6 @@ package postgresql
 
 import (
 	"database/sql"
-	"fmt"
 	"time"
 
 	"github.com/Akshit8/tdm/internal"
@@ -23,7 +22,7 @@ func convertPriority(p Priority) (internal.Priority, error) {
 		return internal.PriorityHigh, nil
 	}
 
-	return internal.Priority(-1), fmt.Errorf("unknown value: %s", p)
+	return internal.Priority(-1), internal.NewErrorf(internal.ErrorCodeInvalidArgument, "unknow value")
 }
 
 func newNullTime(t time.Time) sql.NullTime {

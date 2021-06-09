@@ -1,6 +1,6 @@
 version: "3.7"
 
-services: 
+services:
   postgres:
     image: postgres:12-alpine
     restart: always
@@ -13,7 +13,7 @@ services:
       - 5432:5432
     volumes:
       - postgres:/var/lib/postgresql/data
-  
+
   postgres-ui:
     image: dpage/pgadmin4
     restart: always
@@ -23,11 +23,14 @@ services:
     ports:
       - 5050:80
 
+  # https://stackoverflow.com/questions/45171564/using-vault-with-docker-compose-file
   vault:
     image: vault:1.7.1
     environment:
       VAULT_DEV_ROOT_TOKEN_ID: myroot
       VAULT_DEV_LISTEN_ADDRESS: 0.0.0.0:8300
+    cap_add:
+      - IPC_LOCK
     ports:
       - 8300:8300
 

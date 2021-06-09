@@ -19,6 +19,7 @@ import (
 	"github.com/Akshit8/tdm/internal/service"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
+	"github.com/rs/cors"
 )
 
 //go:embed static
@@ -52,8 +53,11 @@ func main() {
 	fsys, _ := fs.Sub(content, "static")
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.FS(fsys))))
 
+	// cors enabled
+	handler := cors.AllowAll().Handler(r)
+
 	srv := &http.Server{
-		Handler:           r,
+		Handler:           handler,
 		Addr:              address,
 		ReadTimeout:       1 * time.Second,
 		ReadHeaderTimeout: 1 * time.Second,

@@ -103,7 +103,7 @@ func TestCreate(t *testing.T) {
 				http.StatusInternalServerError,
 				&rest.ErrorResponse{
 					Status: http.StatusInternalServerError,
-					Error:  "create failed",
+					Error:  "internal error",
 				},
 				&rest.ErrorResponse{},
 			},
@@ -194,7 +194,7 @@ func TestTask(t *testing.T) {
 				http.StatusInternalServerError,
 				&rest.ErrorResponse{
 					Status: http.StatusInternalServerError,
-					Error:  "find failed",
+					Error:  "internal error",
 				},
 				&rest.ErrorResponse{},
 			},
@@ -292,7 +292,7 @@ func TestUpdate(t *testing.T) {
 				http.StatusInternalServerError,
 				&rest.ErrorResponse{
 					Status: http.StatusInternalServerError,
-					Error:  "update failed",
+					Error:  "internal error",
 				},
 				&rest.ErrorResponse{},
 			},
@@ -317,6 +317,90 @@ func TestUpdate(t *testing.T) {
 					http.MethodPut,
 					fmt.Sprintf("/tasks/%s", uuid.NewString()),
 					bytes.NewReader(test.input),
+				),
+			)
+
+			require.Equal(t, test.output.expectedStatus, res.StatusCode)
+
+			assertResponse(t, res, testOuptut{test.output.expected, test.output.target})
+		})
+	}
+}
+
+func TestDelete(t *testing.T) {
+	t.Parallel()
+
+	type output struct {
+		expectedStatus int
+		expected       interface{}
+		target         interface{}
+	}
+
+	tests := []struct {
+		name   string
+		setup  func(*servicetesting.FakeTaskService)
+		output output
+	}{
+		{
+			"OK: 200",
+			func(s *servicetesting.FakeTaskService) {},
+			output{
+				http.StatusOK,
+				func() *string {
+					a := "task deleted"
+					return &a
+				}(),
+				new(string),
+			},
+		},
+		{
+			"ERR: 404",
+			func(s *servicetesting.FakeTaskService) {
+				s.DeleteReturns(internal.NewErrorf(internal.ErrorCodeNotFound, "not found"))
+			},
+			output{
+				http.StatusNotFound,
+				&rest.ErrorResponse{
+					Status: http.StatusNotFound,
+					Error:  "delete failed",
+				},
+				&rest.ErrorResponse{},
+			},
+		},
+		{
+			"ERR: 500",
+			func(s *servicetesting.FakeTaskService) {
+				s.DeleteReturns(errors.New("service failed"))
+			},
+			output{
+				http.StatusInternalServerError,
+				&rest.ErrorResponse{
+					Status: http.StatusInternalServerError,
+					Error:  "internal error",
+				},
+				&rest.ErrorResponse{},
+			},
+		},
+	}
+
+	for _, test := range tests {
+		test := test
+
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+
+			router := mux.NewRouter()
+			svc := &servicetesting.FakeTaskService{}
+			test.setup(svc)
+
+			rest.NewTaskHandler(svc).Register(router)
+
+			res := doRequest(
+				router,
+				httptest.NewRequest(
+					http.MethodDelete,
+					fmt.Sprintf("/tasks/%s", uuid.NewString()),
+					nil,
 				),
 			)
 

@@ -3,7 +3,7 @@ package postgresql
 import (
 	"context"
 	"database/sql"
-	"fmt"
+	"errors"
 
 	"github.com/Akshit8/tdm/internal"
 	"github.com/Akshit8/tdm/internal/service"
@@ -31,7 +31,7 @@ func (t *Task) Create(ctx context.Context, description string, priority internal
 		DueDate:     newNullTime(dates.Due),
 	})
 	if err != nil {
-		return internal.Task{}, fmt.Errorf("insert: %w", err)
+		return internal.Task{}, internal.WrapError(err, internal.ErrorCodeUnknown, "insert task")
 	}
 
 	return internal.Task{
@@ -46,17 +46,20 @@ func (t *Task) Create(ctx context.Context, description string, priority internal
 func (t *Task) Find(ctx context.Context, id string) (internal.Task, error) {
 	val, err := uuid.Parse(id)
 	if err != nil {
-		return internal.Task{}, fmt.Errorf("uuid parse: %w", err)
+		return internal.Task{}, internal.WrapError(err, internal.ErrorCodeInvalidArgument, "invalid uuid")
 	}
 
 	res, err := t.q.SelectTask(ctx, val)
 	if err != nil {
-		return internal.Task{}, fmt.Errorf("select: %w", err)
+		if errors.Is(err, sql.ErrNoRows) {
+			return internal.Task{}, internal.WrapError(err, internal.ErrorCodeNotFound, "task not found")
+		}
+		return internal.Task{}, internal.WrapError(err, internal.ErrorCodeUnknown, "select task")
 	}
 
 	priority, err := convertPriority(res.Priority)
 	if err != nil {
-		return internal.Task{}, fmt.Errorf("convert priority: %w", err)
+		return internal.Task{}, internal.WrapError(err, internal.ErrorCodeUnknown, "convert priority")
 	}
 
 	return internal.Task{
@@ -75,10 +78,10 @@ func (t *Task) Find(ctx context.Context, id string) (internal.Task, error) {
 func (t *Task) Update(ctx context.Context, id string, description string, priority internal.Priority, dates internal.Dates, isDone bool) error {
 	val, err := uuid.Parse(id)
 	if err != nil {
-		return fmt.Errorf("uuid parse: %w", err)
+		return internal.WrapError(err, internal.ErrorCodeInvalidArgument, "invalid uuid")
 	}
 
-	err = t.q.UpdateTask(ctx, UpdateTaskParams{
+	_, err = t.q.UpdateTask(ctx, UpdateTaskParams{
 		ID:          val,
 		Description: description,
 		Priority:    newPriority(priority),
@@ -87,7 +90,30 @@ func (t *Task) Update(ctx context.Context, id string, description string, priori
 		Done:        isDone,
 	})
 	if err != nil {
-		return fmt.Errorf("update: %w", err)
+		if errors.Is(err, sql.ErrNoRows) {
+			return internal.WrapError(err, internal.ErrorCodeNotFound, "task not found")
+		}
+
+		return internal.WrapError(err, internal.ErrorCodeUnknown, "update task")
+	}
+
+	return nil
+}
+
+// Delete deletes the existing record matching the id.
+func (t *Task) Delete(ctx context.Context, id string) error {
+	val, err := uuid.Parse(id)
+	if err != nil {
+		return internal.WrapError(err, internal.ErrorCodeInvalidArgument, "invalid uuid")
+	}
+
+	_, err = t.q.DeleteTask(ctx, val)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return internal.WrapError(err, internal.ErrorCodeNotFound, "task not found")
+		}
+
+		return internal.WrapError(err, internal.ErrorCodeUnknown, "delete task")
 	}
 
 	return nil

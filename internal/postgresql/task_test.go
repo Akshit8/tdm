@@ -2,6 +2,7 @@ package postgresql_test
 
 import (
 	"context"
+	"database/sql"
 	"testing"
 	"time"
 
@@ -25,9 +26,18 @@ func TestCreate(t *testing.T) {
 	t.Run(("Create: ERR Priority"), func(t *testing.T) {
 		t.Parallel()
 
-		task, err := repo.Create(context.Background(), "invalid priority", internal.Priority(-1), internal.Dates{})
+		task, err := repo.Create(
+			context.Background(),
+			"invalid priority",
+			internal.Priority(-1),
+			internal.Dates{},
+		)
 		require.Error(t, err)
 		require.Equal(t, internal.Task{}, task)
+
+		var ierr *internal.Error
+		require.ErrorAs(t, err, &ierr)
+		require.Equal(t, internal.ErrorCodeUnknown, ierr.Code())
 	})
 }
 
@@ -53,6 +63,10 @@ func TestFind(t *testing.T) {
 
 		_, err := repo.Find(context.Background(), "x")
 		require.Error(t, err)
+
+		var ierr *internal.Error
+		require.ErrorAs(t, err, &ierr)
+		require.Equal(t, internal.ErrorCodeInvalidArgument, ierr.Code())
 	})
 
 	t.Run("Find: ERR not found", func(t *testing.T) {
@@ -60,6 +74,10 @@ func TestFind(t *testing.T) {
 
 		_, err := repo.Find(context.Background(), uuid.NewString())
 		require.Error(t, err)
+
+		var ierr *internal.Error
+		require.ErrorAs(t, err, &ierr)
+		require.Equal(t, internal.ErrorCodeNotFound, ierr.Code())
 	})
 }
 
@@ -76,7 +94,8 @@ func TestUpdate(t *testing.T) {
 		newTask.Dates.Due = time.Now().UTC()
 		newTask.Priority = internal.PriorityHigh
 
-		err = repo.Update(context.Background(),
+		err = repo.Update(
+			context.Background(),
 			newTask.ID,
 			newTask.Description,
 			newTask.Priority,
@@ -96,7 +115,8 @@ func TestUpdate(t *testing.T) {
 	t.Run("Update: ERR invalid UUID", func(t *testing.T) {
 		t.Parallel()
 
-		err := repo.Update(context.Background(),
+		err := repo.Update(
+			context.Background(),
 			"x",
 			"",
 			internal.PriorityLow,
@@ -104,6 +124,10 @@ func TestUpdate(t *testing.T) {
 			false,
 		)
 		require.Error(t, err)
+
+		var ierr *internal.Error
+		require.ErrorAs(t, err, &ierr)
+		require.Equal(t, internal.ErrorCodeInvalidArgument, ierr.Code())
 	})
 
 	t.Run("Update: ERR invalid Priority", func(t *testing.T) {
@@ -112,7 +136,8 @@ func TestUpdate(t *testing.T) {
 		newTask, err := repo.Create(context.Background(), "test", internal.PriorityLow, internal.Dates{})
 		require.NoError(t, err)
 
-		err = repo.Update(context.Background(),
+		err = repo.Update(
+			context.Background(),
 			newTask.ID,
 			"",
 			internal.Priority(-1),
@@ -120,5 +145,68 @@ func TestUpdate(t *testing.T) {
 			false,
 		)
 		require.Error(t, err)
+
+		var ierr *internal.Error
+		require.ErrorAs(t, err, &ierr)
+		require.Equal(t, internal.ErrorCodeUnknown, ierr.Code())
+	})
+
+	t.Run("Update: ERR not found", func(t *testing.T) {
+		t.Parallel()
+
+		err := repo.Update(
+			context.Background(),
+			uuid.NewString(),
+			"",
+			internal.PriorityMedium,
+			internal.Dates{},
+			false,
+		)
+		require.Error(t, err)
+
+		var ierr *internal.Error
+		require.ErrorAs(t, err, &ierr)
+		require.Equal(t, internal.ErrorCodeNotFound, ierr.Code())
+	})
+}
+
+func TestDelete(t *testing.T) {
+	t.Parallel()
+
+	t.Run("Delete: OK", func(t *testing.T) {
+		t.Parallel()
+
+		newTask, err := repo.Create(context.Background(), "test", internal.PriorityLow, internal.Dates{})
+		require.NoError(t, err)
+
+		err = repo.Delete(context.Background(), newTask.ID)
+		require.NoError(t, err)
+
+		_, err = repo.Find(context.Background(), newTask.ID)
+		require.ErrorIs(t, err, sql.ErrNoRows)
+	})
+
+	t.Run("Delete: ERR uuid", func(t *testing.T) {
+		t.Parallel()
+
+		err := repo.Delete(context.Background(), "x")
+
+		require.Error(t, err)
+
+		var ierr *internal.Error
+		require.ErrorAs(t, err, &ierr)
+		require.Equal(t, internal.ErrorCodeInvalidArgument, ierr.Code())
+	})
+
+	t.Run("Delete: ERR not found", func(t *testing.T) {
+		t.Parallel()
+
+		err := repo.Delete(context.Background(), uuid.NewString())
+
+		require.Error(t, err)
+
+		var ierr *internal.Error
+		require.ErrorAs(t, err, &ierr)
+		require.Equal(t, internal.ErrorCodeNotFound, ierr.Code())
 	})
 }

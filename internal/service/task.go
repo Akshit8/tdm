@@ -15,6 +15,7 @@ type TaskRepository interface {
 	Create(ctx context.Context, description string, priority internal.Priority, dates internal.Dates) (internal.Task, error)
 	Find(ctx context.Context, id string) (internal.Task, error)
 	Update(ctx context.Context, id string, description string, priority internal.Priority, dates internal.Dates, isDone bool) error
+	Delete(ctx context.Context, id string) error
 }
 
 // TaskService defines available operation on Task Service
@@ -22,6 +23,7 @@ type TaskService interface {
 	Create(ctx context.Context, description string, priority internal.Priority, dates internal.Dates) (internal.Task, error)
 	Task(ctx context.Context, id string) (internal.Task, error)
 	Update(ctx context.Context, id string, description string, priority internal.Priority, dates internal.Dates, isDone bool) error
+	Delete(ctx context.Context, id string) error
 }
 
 type task struct {
@@ -60,6 +62,16 @@ func (t *task) Update(ctx context.Context, id string, description string, priori
 	err := t.repo.Update(ctx, id, description, priority, dates, isDone)
 	if err != nil {
 		return fmt.Errorf("repo update: %w", err)
+	}
+
+	return nil
+}
+
+// Delete removes an existing Task from the datastore.
+func (t *task) Delete(ctx context.Context, id string) error {
+	err := t.repo.Delete(ctx, id)
+	if err != nil {
+		return fmt.Errorf("repo delete: %w", err)
 	}
 
 	return nil
